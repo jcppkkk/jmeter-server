@@ -13,12 +13,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN echo 'APT::Get::Clean=always;' >> /etc/apt/apt.conf.d/99AutomaticClean
 
 # Speed up apt with squid-deb-proxy on docker host
-RUN /sbin/ip route | awk '/default/ { print "Acquire::http::Proxy \"http://"$3":8000\";" }' > /etc/apt/apt.conf.d/30proxy; \
-	apt-get -qq update && \
+RUN apt-get -qq update && \
 	apt-get upgrade -y && \
 	apt-get autoremove -y && \
-	apt-get install -y openjdk-7-jre-headless wget unzip && \
-	rm -f /etc/apt/apt.conf.d/30proxy
+	apt-get install -y openjdk-7-jre-headless wget unzip
 ENV DEBIAN_FRONTEND=
 
 ADD setup /tmp/setup
