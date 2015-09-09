@@ -2,7 +2,8 @@
 exec >> /var/log/jmeter-server.log 2>&1
 set -x
 
-export RMI_HOST_DEF=-Djava.rmi.server.hostname=`ifconfig | grep -A1 eth | awk -F "[ :]+" '/inet / {print $4}'`
+export RMI_HOST_DEF=-Djava.rmi.server.hostname=`ifconfig | \
+  grep -v "^\(lo\|docker\|virbr\)" | grep -A1 "^[^ ]" | awk -F "[ :]+" '/inet / {print $4}'`
 FreeMem=`awk '/MemFree/ { print int($2/1024) }' /proc/meminfo`
 s=$(($FreeMem/10*8))
 x=$(($FreeMem/10*8))
@@ -10,4 +11,4 @@ n=$(($FreeMem/10*2))
 export JVM_ARGS="-Xmn${n}m -Xms${s}m -Xmx${x}m"
 /var/lib/jmeter/bin/jmeter-server \
   -Dclient.rmi.localport=${RMI_LOCALPORT} \
-    -Dserver.rmi.localport=${RMI_LOCALPORT}
+  -Dserver.rmi.localport=${RMI_LOCALPORT}
